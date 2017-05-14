@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+        sensor.py est um module qui lit différents capteurs et affiche les valeurs lue sur une matrice de leds 8x8
+
+"""
+
 import os
 import time
 import sys
@@ -23,7 +28,9 @@ base_dir = '/sys/bus/w1/devices/'
 device_folder = glob.glob(base_dir + '28-000008a123a3')[0]
 device_file = device_folder + '/w1_slave'
 
+
 def read_temp_raw():
+        """ lit le fichier w1_slave du capteur en cours """
 	catdata = subprocess.Popen(['cat',device_file], 
 	stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	out,err = catdata.communicate()
@@ -32,6 +39,7 @@ def read_temp_raw():
 	return lines
 
 def read_temp():
+    """ lit la temperaure dans les lignes du fichier w1_slave """           
     lines = read_temp_raw()
     while lines[0].strip()[-3:] != 'YES':
         time.sleep(0.2)
@@ -101,7 +109,6 @@ display.begin()
 display.clear()
 tSleep = 1
 tSleep_main = 5
-print 'CTRL-C to stop'
 
 # Sourire
 image_smile= Image.new('RGB',(8,8))
@@ -181,25 +188,8 @@ draw_grr.line((5, 5, 5, 5), fill=(255, 0, 0))
 image_black= Image.new('RGB',(8,8))
 draw_black = ImageDraw.Draw(image_black)
 
-# while True:
-   
-print ''
-print ('Infinite loop. CTRL-C for break')
-#   print ''
-
-##   temperatureExt = 0
-##   i = 0
 vColor = 3
 vSize = 3
-##   while i < count:
-##      temperature,sensorId,mesureStatus = sensorArray.tempC(i)
-##      print('Sensor '+sensorId+' mesure '+str(temperature)+'°C')
-##      if sensorId == '28-000008a123a3' :
-##         temperatureExt += temperature
-##         i += 1
-##   temperatureExt /= i
-##   vTxt = '18b20 mean on {0:d} sensors {1:0.1f}C'.format(i,temperatureExt)
-##   print('    '+vTxt)
 
 temperatureExt = read_temp()
 print 'Temperature extérieure: {0:0.1f}°C'.format(temperatureExt)
@@ -208,17 +198,6 @@ if temperatureExt < 19 : vColor = 3
 elif temperatureExt > 24 : vColor =2
 else : vColor = 1
 driver8x8.DisplayScroll(vTxt,vColor, False, vSize)
-
-#   driver8x8.DisplayScroll(vTxt,vColor, False, vSize)
-
-   # test_dht11
-##   humidity, temperature = Adafruit_DHT.read_retry(11, in_DH11)
-##   print 'DHT11 temp: {0:0.0f}°C  Humidity: {1:0.0f} %'.format(temperature, humidity)
-##   vTxt = 'DHT11 temp {0:0.0f}C  Hrel{1:0.0f} %'.format(temperature, humidity)
-##   if temperature < 19 : vColor = 3
-##   elif temperature > 24 : vColor =2
-##   else : vColor = 1
-##   driver8x8.DisplayScroll(vTxt,vColor, False, vSize)
 
 # test_am2302 (dht22 avec boitier et cables)
 humidity, temperature = Adafruit_DHT.read_retry(22, in_DH22)
